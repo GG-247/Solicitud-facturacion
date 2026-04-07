@@ -3,34 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel de Control | Contadores GB</title>
+  <title>Panel de Control | Lorenzo Reyes y Asociados, S.C.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <style>
     :root {
-      --navy: #0B1D35;
-      --navy-2: #0F2444;
-      --navy-3: #162f56;
-      --gold: #C9943A;
-      --gold-light: #E8B86D;
-      --cream: #F1F4F8;
-      --white: #FFFFFF;
-      --gray: #8A96A8;
-      --gray-light: #E2E8F0;
-      --border: #D0D9E6;
-
-      /* Andon colors */
-      --verde: #16A34A;
-      --verde-bg: #DCFCE7;
-      --amarillo: #D97706;
-      --amarillo-bg: #FEF3C7;
-      --rojo: #DC2626;
-      --rojo-bg: #FEE2E2;
+      --navy: #0B1D35; --navy-2: #0F2444; --navy-3: #162f56;
+      --blue: #1B7DB9; --blue-dark: #145e8a; --blue-light: #4da6d8; --blue-pale: #e8f4fb;
+      --cream: #F1F4F8; --white: #FFFFFF;
+      --gray: #8A96A8; --gray-light: #E2E8F0; --border: #D0D9E6;
+      --verde: #16A34A; --verde-bg: #DCFCE7;
+      --amarillo: #D97706; --amarillo-bg: #FEF3C7;
+      --rojo: #DC2626; --rojo-bg: #FEE2E2;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── LOCK SCREEN ── */
+    .lock-screen {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-3) 60%, var(--blue-dark) 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .lock-screen.hidden { display: none; }
+    .lock-logo {
+      font-family: 'Montserrat', sans-serif; font-weight: 800;
+      font-size: 1.3rem; color: var(--white); margin-bottom: 0.4rem; text-align: center;
+    }
+    .lock-logo span { color: var(--blue-light); }
+    .lock-sub { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 2.5rem; }
+    .lock-card {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px; padding: 2.5rem 2rem; width: 100%; max-width: 380px;
+      backdrop-filter: blur(10px);
+    }
+    .lock-icon { font-size: 2.4rem; text-align: center; margin-bottom: 1rem; }
+    .lock-card h2 {
+      font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 700;
+      color: var(--white); text-align: center; margin-bottom: 0.4rem;
+    }
+    .lock-card p { font-size: 0.82rem; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 1.75rem; line-height: 1.6; }
+    .lock-tabs { display: flex; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+    .lock-tab {
+      flex: 1; padding: 0.65rem; border: none;
+      background: transparent; color: rgba(255,255,255,0.45);
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .lock-tab.active { background: var(--blue); color: white; }
+    .lock-input-wrap { position: relative; margin-bottom: 1rem; }
+    .lock-input {
+      width: 100%; padding: 0.8rem 1rem; border: 1.5px solid rgba(255,255,255,0.18);
+      border-radius: 8px; background: rgba(255,255,255,0.08);
+      color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .lock-input::placeholder { color: rgba(255,255,255,0.3); }
+    .lock-input:focus { border-color: var(--blue-light); }
+    .lock-input.error { border-color: var(--rojo); }
+    .lock-btn {
+      width: 100%; padding: 0.85rem;
+      background: var(--blue); border: none; border-radius: 8px;
+      color: white; font-family: 'Montserrat', sans-serif;
+      font-size: 0.88rem; font-weight: 700; letter-spacing: 0.04em;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .lock-btn:hover { background: var(--blue-dark); }
+    .lock-error { font-size: 0.78rem; color: #FCA5A5; text-align: center; margin-top: 0.75rem; display: none; }
+    .lock-error.show { display: block; }
+
+    /* ── FOLIO RESULT ── */
+    .folio-result {
+      margin-top: 1rem; padding: 1rem; border-radius: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      display: none;
+    }
+    .folio-result.show { display: block; }
+    .folio-result-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin-bottom: 0.35rem; }
+    .folio-result-folio { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; color: var(--blue-light); margin-bottom: 0.5rem; }
+    .folio-status-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.35rem 0.85rem; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em;
+    }
+    .folio-status-badge.pendiente { background: rgba(217,119,6,0.25); color: #FCD34D; }
+    .folio-status-badge.en_proceso { background: rgba(96,165,250,0.2); color: #93C5FD; }
+    .folio-status-badge.completado { background: rgba(22,163,74,0.2); color: #86EFAC; }
+    .folio-not-found { color: #FCA5A5; font-size: 0.85rem; }
 
     /* ── HEADER ── */
     header {
@@ -41,36 +103,27 @@
       box-shadow: 0 2px 16px rgba(0,0,0,0.3);
       position: sticky; top: 0; z-index: 200;
     }
-    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo-icon { width: 36px; height: 36px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--navy); font-size: 0.95rem; }
-    .logo-text { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1rem; font-weight: 600; }
-    .logo-sub { color: var(--gold-light); font-size: 0.64rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; display: block; }
-    .header-right { display: flex; align-items: center; gap: 1.5rem; }
-    .header-right a { color: var(--gray); text-decoration: none; font-size: 0.8rem; transition: color 0.2s; }
-    .header-right a:hover { color: var(--gold-light); }
-    .btn-refresh {
-      padding: 0.45rem 1rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 6px; color: rgba(255,255,255,0.8); font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+    .logo-name {
+      font-family: 'Montserrat', sans-serif; font-weight: 700;
+      font-size: 1rem; color: var(--white); text-decoration: none; letter-spacing: -0.01em;
     }
+    .logo-name span { color: var(--blue-light); }
+    .header-right { display: flex; align-items: center; gap: 1.25rem; }
+    .header-right a { color: var(--gray); text-decoration: none; font-size: 0.8rem; transition: color 0.2s; }
+    .header-right a:hover { color: var(--blue-light); }
+    .btn-refresh { padding: 0.45rem 1rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(255,255,255,0.8); font-family: 'DM Sans', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
     .btn-refresh:hover { background: rgba(255,255,255,0.15); }
     .live-dot { width: 8px; height: 8px; background: var(--verde); border-radius: 50%; display: inline-block; margin-right: 4px; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    .admin-badge { font-size: 0.72rem; background: rgba(27,125,185,0.3); color: var(--blue-light); border-radius: 4px; padding: 0.2rem 0.6rem; font-weight: 600; }
+    .btn-logout { background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--gray); font-size: 0.78rem; font-family: 'DM Sans', sans-serif; border-radius: 6px; padding: 0.35rem 0.75rem; cursor: pointer; transition: all 0.2s; }
+    .btn-logout:hover { color: #FCA5A5; border-color: rgba(220,38,38,0.4); }
 
-    /* ── ANDON PANEL ── */
-    .andon-bar {
-      background: var(--navy-2);
-      padding: 0.85rem 2rem;
-      display: flex; align-items: center; gap: 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
+    /* ── ANDON BAR ── */
+    .andon-bar { background: var(--navy-2); padding: 0.85rem 2rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.07); flex-wrap: wrap; }
     .andon-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-right: 0.5rem; }
     .andon-lights { display: flex; gap: 0.75rem; align-items: center; }
-    .andon-light {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.35rem 0.85rem; border-radius: 20px;
-      font-size: 0.78rem; font-weight: 600;
-    }
+    .andon-light { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
     .andon-light .dot { width: 10px; height: 10px; border-radius: 50%; }
     .andon-light.verde { background: rgba(22,163,74,0.18); color: #4ADE80; }
     .andon-light.verde .dot { background: var(--verde); box-shadow: 0 0 8px var(--verde); }
@@ -78,154 +131,76 @@
     .andon-light.amarillo .dot { background: var(--amarillo); box-shadow: 0 0 8px var(--amarillo); animation: pulseDot 1.5s infinite; }
     .andon-light.rojo { background: rgba(220,38,38,0.18); color: #FCA5A5; }
     .andon-light.rojo .dot { background: var(--rojo); box-shadow: 0 0 8px var(--rojo); animation: pulseDot 0.8s infinite; }
-    @keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-
+    @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
     .andon-separator { width: 1px; height: 24px; background: rgba(255,255,255,0.1); }
     .andon-stat { text-align: center; }
-    .andon-stat-num { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--white); font-weight: 600; }
+    .andon-stat-num { font-family: 'Montserrat', sans-serif; font-size: 1.25rem; color: var(--white); font-weight: 700; }
     .andon-stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); }
-
-    .andon-alert {
-      margin-left: auto;
-      display: none; align-items: center; gap: 0.5rem;
-      background: rgba(220,38,38,0.2); border: 1px solid rgba(220,38,38,0.4);
-      border-radius: 6px; padding: 0.35rem 0.85rem;
-      font-size: 0.78rem; color: #FCA5A5; font-weight: 600;
-      animation: blinkAlert 2s infinite;
-    }
+    .andon-alert { margin-left: auto; display: none; align-items: center; gap: 0.5rem; background: rgba(220,38,38,0.2); border: 1px solid rgba(220,38,38,0.4); border-radius: 6px; padding: 0.35rem 0.85rem; font-size: 0.78rem; color: #FCA5A5; font-weight: 600; animation: blinkAlert 2s infinite; }
     .andon-alert.show { display: flex; }
-    @keyframes blinkAlert { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes blinkAlert { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
 
-    /* ── MAIN LAYOUT ── */
+    /* ── MAIN ── */
     .main-content { flex: 1; padding: 1.5rem 2rem 2rem; }
-
-    /* ── FILTER BAR ── */
-    .filter-bar {
-      display: flex; align-items: center; gap: 1rem;
-      margin-bottom: 1.5rem; flex-wrap: wrap;
-    }
-    .search-box {
-      display: flex; align-items: center; gap: 0.5rem;
-      background: var(--white); border: 1.5px solid var(--border); border-radius: 8px;
-      padding: 0.5rem 0.85rem; flex: 1; max-width: 320px;
-    }
-    .search-box input {
-      border: none; background: transparent; font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem; color: var(--navy); outline: none; width: 100%;
-    }
-    .filter-select {
-      padding: 0.5rem 0.85rem; border: 1.5px solid var(--border); border-radius: 8px;
-      background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
-      color: var(--navy); outline: none; cursor: pointer;
-    }
-    .view-toggle { display: flex; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-left: auto; }
-    .view-toggle button {
-      padding: 0.5rem 0.9rem; border: none; background: var(--white);
-      font-size: 0.85rem; cursor: pointer; color: var(--gray); transition: all 0.2s;
-    }
-    .view-toggle button.active { background: var(--navy); color: var(--white); }
+    .filter-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-box { display: flex; align-items: center; gap: 0.5rem; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 0.5rem 0.85rem; flex: 1; max-width: 320px; }
+    .search-box input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--navy); outline: none; width: 100%; }
+    .filter-select { padding: 0.5rem 0.85rem; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--navy); outline: none; cursor: pointer; }
 
     /* ── KANBAN ── */
     .kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
-
-    .kanban-col {
-      background: var(--white); border-radius: 12px;
-      border: 1.5px solid var(--border); overflow: hidden;
-    }
-    .col-header {
-      padding: 0.9rem 1.1rem;
-      display: flex; align-items: center; justify-content: space-between;
-    }
+    .kanban-col { background: var(--white); border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; }
+    .col-header { padding: 0.9rem 1.1rem; display: flex; align-items: center; justify-content: space-between; }
     .col-header.pendiente { background: var(--navy); }
     .col-header.en_proceso { background: #1a3a6b; }
     .col-header.completado { background: #16432F; }
-    .col-title {
-      display: flex; align-items: center; gap: 0.6rem;
-      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: rgba(255,255,255,0.8);
-    }
+    .col-title { display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.8); font-family: 'Montserrat', sans-serif; }
     .col-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .col-dot.pendiente { background: var(--gold); }
+    .col-dot.pendiente { background: #FCD34D; }
     .col-dot.en_proceso { background: #60A5FA; }
     .col-dot.completado { background: #4ADE80; }
-    .col-count {
-      background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8);
-      border-radius: 20px; padding: 0.2rem 0.65rem;
-      font-size: 0.75rem; font-weight: 600;
-    }
+    .col-count { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); border-radius: 20px; padding: 0.2rem 0.65rem; font-size: 0.75rem; font-weight: 600; }
     .col-body { padding: 0.75rem; min-height: 120px; display: flex; flex-direction: column; gap: 0.65rem; }
-    .col-body.drag-over { background: rgba(201,148,58,0.06); border-radius: 0 0 10px 10px; }
+    .col-body.drag-over { background: rgba(27,125,185,0.06); border-radius: 0 0 10px 10px; }
 
-    /* ── KANBAN CARD ── */
-    .kcard {
-      background: var(--white); border: 1.5px solid var(--border); border-radius: 10px;
-      padding: 0.85rem 1rem; cursor: grab; transition: all 0.2s;
-      position: relative; overflow: hidden;
-    }
-    .kcard::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-      width: 4px;
-    }
+    /* ── CARD ── */
+    .kcard { background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; padding: 0.85rem 1rem; cursor: grab; transition: all 0.2s; position: relative; overflow: hidden; }
+    .kcard::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
     .kcard.verde::before { background: var(--verde); }
     .kcard.amarillo::before { background: var(--amarillo); }
     .kcard.rojo::before { background: var(--rojo); box-shadow: 2px 0 8px rgba(220,38,38,0.4); }
-    .kcard:hover { border-color: var(--gold); box-shadow: 0 4px 16px rgba(11,29,53,0.1); transform: translateY(-1px); }
+    .kcard:hover { border-color: var(--blue); box-shadow: 0 4px 16px rgba(11,29,53,0.1); transform: translateY(-1px); }
     .kcard.dragging { opacity: 0.5; cursor: grabbing; }
-
     .kcard-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.5rem; }
-    .kcard-folio { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); text-transform: uppercase; }
-    .andon-badge {
-      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
-      text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 20px;
-    }
+    .kcard-folio { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; font-family: 'Montserrat', sans-serif; }
+    .andon-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 20px; }
     .andon-badge.verde { background: var(--verde-bg); color: var(--verde); }
     .andon-badge.amarillo { background: var(--amarillo-bg); color: var(--amarillo); }
     .andon-badge.rojo { background: var(--rojo-bg); color: var(--rojo); }
-
     .kcard-name { font-size: 0.9rem; font-weight: 600; color: var(--navy); margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .kcard-rfc { font-size: 0.76rem; color: var(--gray); margin-bottom: 0.55rem; }
     .kcard-meta { display: flex; align-items: center; justify-content: space-between; }
-    .kcard-total { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--navy); font-weight: 600; }
+    .kcard-total { font-family: 'Montserrat', sans-serif; font-size: 0.92rem; color: var(--navy); font-weight: 700; }
     .kcard-time { font-size: 0.72rem; color: var(--gray); }
     .kcard-time.warn { color: var(--amarillo); font-weight: 600; }
     .kcard-time.crit { color: var(--rojo); font-weight: 700; }
-
     .kcard-actions { display: flex; gap: 0.4rem; margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px solid var(--gray-light); }
-    .kcard-btn {
-      flex: 1; padding: 0.38rem 0; border-radius: 6px; border: 1px solid var(--border);
-      background: transparent; font-family: 'DM Sans', sans-serif;
-      font-size: 0.72rem; font-weight: 600; color: var(--gray);
-      cursor: pointer; transition: all 0.2s; text-align: center;
-    }
+    .kcard-btn { flex: 1; padding: 0.38rem 0; border-radius: 6px; border: 1px solid var(--border); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--gray); cursor: pointer; transition: all 0.2s; text-align: center; }
     .kcard-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
-    .kcard-btn.primary { background: var(--gold); color: var(--navy); border-color: var(--gold); }
-    .kcard-btn.primary:hover { background: var(--gold-light); }
+    .kcard-btn.primary { background: var(--blue); color: white; border-color: var(--blue); }
+    .kcard-btn.primary:hover { background: var(--blue-dark); }
     .kcard-btn.done { background: var(--verde); color: white; border-color: var(--verde); }
-    .kcard-btn.done:hover { background: #16432F; }
 
-    /* ── EMPTY STATE ── */
     .col-empty { text-align: center; padding: 2rem 1rem; color: var(--gray); font-size: 0.83rem; }
     .col-empty-icon { font-size: 1.8rem; margin-bottom: 0.5rem; opacity: 0.5; }
 
     /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(11,29,53,0.7); z-index: 1000;
-      display: flex; align-items: center; justify-content: center;
-      padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.25s;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(11,29,53,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
     .modal-overlay.show { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--white); border-radius: 14px; max-width: 620px; width: 100%;
-      max-height: 88vh; overflow-y: auto;
-      transform: translateY(20px); transition: transform 0.25s;
-      box-shadow: 0 20px 80px rgba(0,0,0,0.3);
-    }
+    .modal { background: var(--white); border-radius: 14px; max-width: 620px; width: 100%; max-height: 88vh; overflow-y: auto; transform: translateY(20px); transition: transform 0.25s; box-shadow: 0 20px 80px rgba(0,0,0,0.3); }
     .modal-overlay.show .modal { transform: translateY(0); }
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.25rem 1.5rem; background: var(--navy); border-radius: 14px 14px 0 0;
-    }
-    .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--white); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; background: var(--navy); border-radius: 14px 14px 0 0; }
+    .modal-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: var(--white); font-weight: 700; }
     .modal-close { background: none; border: none; color: var(--gray); font-size: 1.4rem; cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1; }
     .modal-close:hover { color: var(--white); }
     .modal-body { padding: 1.5rem; }
@@ -238,7 +213,7 @@
     .detail-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--gray-light); color: var(--navy); }
     .detail-table tr:last-child td { border-bottom: none; }
     .detail-total { display: flex; justify-content: flex-end; padding: 0.65rem 0.75rem; background: var(--navy); border-radius: 0 0 6px 6px; }
-    .detail-total span { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold-light); }
+    .detail-total span { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: #7fd3f8; font-weight: 700; }
     .file-links { display: flex; flex-direction: column; gap: 0.4rem; }
     .file-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--cream); border-radius: 6px; text-decoration: none; color: var(--navy); font-size: 0.84rem; font-weight: 500; transition: background 0.2s; }
     .file-link:hover { background: var(--gray-light); }
@@ -251,17 +226,12 @@
     .btn-modal.success { background: var(--verde); color: var(--white); }
     .btn-modal.success:hover { background: #15803d; }
 
-    /* ── LOADING ── */
-    .loading-overlay {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 4rem; gap: 1rem; color: var(--gray);
-    }
-    .spinner { width: 28px; height: 28px; border: 3px solid var(--gray-light); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .loading-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; gap: 1rem; color: var(--gray); }
+    .spinner { width: 28px; height: 28px; border: 3px solid var(--gray-light); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── STATUS BADGE ── */
     .status-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-    .status-badge.pendiente { background: rgba(201,148,58,0.15); color: var(--gold); }
+    .status-badge.pendiente { background: rgba(217,119,6,0.12); color: var(--amarillo); }
     .status-badge.en_proceso { background: rgba(96,165,250,0.15); color: #3B82F6; }
     .status-badge.completado { background: var(--verde-bg); color: var(--verde); }
 
@@ -270,30 +240,73 @@
     @media (max-width: 900px) { .kanban-board { grid-template-columns: 1fr; } }
     @media (max-width: 600px) {
       .main-content { padding: 1rem; }
-      .andon-bar { flex-wrap: wrap; padding: 0.75rem 1rem; gap: 0.75rem; }
+      .andon-bar { padding: 0.75rem 1rem; gap: 0.75rem; }
       .detail-grid { grid-template-columns: 1fr; }
       header { padding: 0 1rem; }
+      .logo-name { font-size: 0.85rem; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <a class="logo" href="index.html">
-    <div class="logo-icon">GB</div>
-    <div>
-      <span class="logo-text">Contadores GB</span>
-      <span class="logo-sub">Panel de Control</span>
+<!-- ══ PANTALLA DE ACCESO ══ -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-logo">Lorenzo Reyes<span> y Asociados, S.C.</span></div>
+  <div class="lock-sub">Portal de Facturación</div>
+
+  <div class="lock-card">
+    <div class="lock-icon">🔐</div>
+    <h2>Acceso al Portal</h2>
+    <p>Ingresa con tu contraseña de administrador o consulta el estado de tu solicitud con tu folio.</p>
+
+    <!-- TABS -->
+    <div class="lock-tabs">
+      <button class="lock-tab active" id="tabAdmin" onclick="switchTab('admin')">🔑 Administrador</button>
+      <button class="lock-tab" id="tabCliente" onclick="switchTab('cliente')">🔍 Consultar Folio</button>
     </div>
-  </a>
+
+    <!-- PANEL ADMIN -->
+    <div id="panelAdmin">
+      <div class="lock-input-wrap">
+        <input class="lock-input" type="password" id="passInput" placeholder="Contraseña de acceso"
+          onkeydown="if(event.key==='Enter') tryLogin()" />
+      </div>
+      <button class="lock-btn" onclick="tryLogin()">Ingresar al Panel →</button>
+      <div class="lock-error" id="passError">Contraseña incorrecta. Inténtalo de nuevo.</div>
+    </div>
+
+    <!-- PANEL CLIENTE -->
+    <div id="panelCliente" style="display:none">
+      <div class="lock-input-wrap">
+        <input class="lock-input" type="text" id="folioInput" placeholder="Ej. LRA-482931"
+          style="text-transform:uppercase"
+          onkeydown="if(event.key==='Enter') buscarFolio()"
+          oninput="this.value=this.value.toUpperCase()" />
+      </div>
+      <button class="lock-btn" onclick="buscarFolio()">Consultar estado →</button>
+      <div class="lock-error" id="folioError">No se encontró ese folio. Verifica e intenta de nuevo.</div>
+      <div class="folio-result" id="folioResult">
+        <div class="folio-result-label">Tu solicitud</div>
+        <div class="folio-result-folio" id="folioResultNum"></div>
+        <div id="folioResultStatus"></div>
+        <div style="font-size:0.75rem; color:rgba(255,255,255,0.35); margin-top:0.6rem" id="folioResultDate"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP PRINCIPAL ══ -->
+<header>
+  <a class="logo-name" href="index.html">Lorenzo Reyes<span> y Asociados, S.C.</span></a>
   <div class="header-right">
     <span style="color:rgba(255,255,255,0.5); font-size:0.75rem;"><span class="live-dot"></span>En vivo</span>
+    <span class="admin-badge">🔑 Admin</span>
     <button class="btn-refresh" onclick="loadData()">↻ Actualizar</button>
+    <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
     <a href="index.html">Portal Cliente →</a>
   </div>
 </header>
 
-<!-- ANDON BAR -->
 <div class="andon-bar">
   <span class="andon-title">🚦 Andon</span>
   <div class="andon-lights">
@@ -309,7 +322,6 @@
 </div>
 
 <div class="main-content">
-  <!-- FILTER BAR -->
   <div class="filter-bar">
     <div class="search-box">
       <span style="color:var(--gray)">🔍</span>
@@ -330,7 +342,6 @@
     <span id="lastUpdate" style="font-size:0.75rem; color:var(--gray); margin-left:auto;"></span>
   </div>
 
-  <!-- KANBAN BOARD -->
   <div class="kanban-board" id="kanbanBoard">
     <div class="kanban-col" id="col-pendiente">
       <div class="col-header pendiente">
@@ -356,28 +367,94 @@
   </div>
 </div>
 
-<!-- DETAIL MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
   <div class="modal" id="modal">
     <div class="modal-header">
       <h2 id="modalTitle">Detalle de Solicitud</h2>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
-    <div class="modal-body" id="modalBody"><!-- dynamic --></div>
-    <div class="modal-footer" id="modalFooter"><!-- dynamic --></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
   </div>
 </div>
 
-<footer>© 2025 Contadores GB · Panel Kanban + Andon · Proyecto Green Belt Six Sigma</footer>
+<footer>© 2025 Lorenzo Reyes y Asociados, S.C. · Panel Kanban + Andon</footer>
 
 <script>
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // ── CONTRASEÑA ──────────────────────────────────────────────
+  // Cambia esta contraseña por la que desees usar
+  const ADMIN_PASSWORD = 'LRA2025';
+
+  let isAuthenticated = false;
   let allData = [];
   let dragId = null;
 
-  // ── ANDON LOGIC ──
+  // ── LOCK / LOGIN ──
+  function switchTab(tab) {
+    document.getElementById('tabAdmin').classList.toggle('active', tab==='admin');
+    document.getElementById('tabCliente').classList.toggle('active', tab==='cliente');
+    document.getElementById('panelAdmin').style.display = tab==='admin' ? 'block' : 'none';
+    document.getElementById('panelCliente').style.display = tab==='cliente' ? 'block' : 'none';
+    document.getElementById('passError').classList.remove('show');
+    document.getElementById('folioError').classList.remove('show');
+    document.getElementById('folioResult').classList.remove('show');
+  }
+
+  function tryLogin() {
+    const val = document.getElementById('passInput').value;
+    if (val === ADMIN_PASSWORD) {
+      isAuthenticated = true;
+      document.getElementById('lockScreen').classList.add('hidden');
+      loadData();
+    } else {
+      document.getElementById('passInput').classList.add('error');
+      document.getElementById('passError').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('passInput').classList.remove('error');
+        document.getElementById('passInput').value = '';
+      }, 1200);
+    }
+  }
+
+  function logout() {
+    isAuthenticated = false;
+    document.getElementById('passInput').value = '';
+    document.getElementById('lockScreen').classList.remove('hidden');
+  }
+
+  async function buscarFolio() {
+    const folio = document.getElementById('folioInput').value.trim().toUpperCase();
+    document.getElementById('folioError').classList.remove('show');
+    document.getElementById('folioResult').classList.remove('show');
+    if (!folio) return;
+
+    try {
+      const { data, error } = await sb.from('solicitudes_facturacion')
+        .select('folio, status, created_at, razon_social')
+        .eq('folio', folio)
+        .single();
+
+      if (error || !data) {
+        document.getElementById('folioError').classList.add('show');
+        return;
+      }
+
+      const labels = { pendiente: '🕐 Pendiente', en_proceso: '⚙️ En Proceso', completado: '✅ Completada' };
+      document.getElementById('folioResultNum').textContent = data.folio;
+      document.getElementById('folioResultStatus').innerHTML =
+        `<span class="folio-status-badge ${data.status}">${labels[data.status] || data.status}</span>`;
+      document.getElementById('folioResultDate').textContent =
+        'Recibida: ' + new Date(data.created_at).toLocaleString('es-MX', { dateStyle:'medium', timeStyle:'short' });
+      document.getElementById('folioResult').classList.add('show');
+    } catch(e) {
+      document.getElementById('folioError').classList.add('show');
+    }
+  }
+
+  // ── ANDON ──
   function getAndonLevel(createdAt, status) {
     if (status === 'completado') return 'verde';
     const hrs = (Date.now() - new Date(createdAt)) / 3600000;
@@ -385,7 +462,6 @@
     if (hrs >= 18) return 'amarillo';
     return 'verde';
   }
-
   function formatElapsed(createdAt) {
     const ms = Date.now() - new Date(createdAt);
     const hrs = Math.floor(ms / 3600000);
@@ -394,7 +470,6 @@
     if (hrs >= 18) return `⏰ ${hrs}h ${mins}m (próx. vencer)`;
     return `${hrs}h ${mins}m`;
   }
-
   function getTimeClass(createdAt, status) {
     if (status === 'completado') return '';
     const hrs = (Date.now() - new Date(createdAt)) / 3600000;
@@ -403,14 +478,12 @@
     return '';
   }
 
-  // ── LOAD DATA ──
+  // ── LOAD ──
   async function loadData() {
+    if (!isAuthenticated) return;
     document.getElementById('lastUpdate').textContent = '';
     try {
-      const { data, error } = await sb
-        .from('solicitudes_facturacion')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data, error } = await sb.from('solicitudes_facturacion').select('*').order('created_at', { ascending: false });
       if (error) throw error;
       allData = data || [];
       renderBoard(allData);
@@ -418,7 +491,6 @@
       document.getElementById('lastUpdate').textContent =
         'Actualizado: ' + new Date().toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
     } catch(err) {
-      console.error(err);
       ['pendiente','en_proceso','completado'].forEach(s => {
         document.getElementById('body-'+s).innerHTML =
           `<div class="loading-overlay" style="padding:2rem"><p style="color:var(--rojo)">Error de conexión.<br><small>${err.message}</small></p></div>`;
@@ -426,25 +498,19 @@
     }
   }
 
-  // ── FILTER ──
   function filterCards() {
     const q = document.getElementById('searchInput').value.toLowerCase();
     const fs = document.getElementById('filterStatus').value;
     const fa = document.getElementById('filterAndon').value;
-    let filtered = allData.filter(r => {
-      const match = !q || r.folio?.toLowerCase().includes(q) || r.razon_social?.toLowerCase().includes(q) || r.rfc?.toLowerCase().includes(q) || r.solicitante?.toLowerCase().includes(q);
-      const sMatch = !fs || r.status === fs;
-      const aMatch = !fa || getAndonLevel(r.created_at, r.status) === fa;
-      return match && sMatch && aMatch;
-    });
-    renderBoard(filtered);
+    renderBoard(allData.filter(r => {
+      const match = !q || r.folio?.toLowerCase().includes(q) || r.razon_social?.toLowerCase().includes(q) || r.rfc?.toLowerCase().includes(q);
+      return match && (!fs || r.status===fs) && (!fa || getAndonLevel(r.created_at, r.status)===fa);
+    }));
   }
 
-  // ── RENDER BOARD ──
   function renderBoard(data) {
     const cols = { pendiente: [], en_proceso: [], completado: [] };
     data.forEach(r => { if (cols[r.status]) cols[r.status].push(r); });
-
     Object.entries(cols).forEach(([status, rows]) => {
       const body = document.getElementById('body-'+status);
       document.getElementById('cnt-'+status).textContent = rows.length;
@@ -460,24 +526,22 @@
     const level = getAndonLevel(r.created_at, r.status);
     const elapsed = formatElapsed(r.created_at);
     const tClass = getTimeClass(r.created_at, r.status);
-    const total = parseFloat(r.total || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
-
+    const total = parseFloat(r.total||0).toLocaleString('es-MX', { style:'currency', currency:'MXN' });
     let nextBtn = '';
-    if (r.status === 'pendiente') nextBtn = `<button class="kcard-btn primary" onclick="moveCard('${r.id}','en_proceso',event)">▶ Iniciar</button>`;
-    if (r.status === 'en_proceso') nextBtn = `<button class="kcard-btn done" onclick="moveCard('${r.id}','completado',event)">✓ Completar</button>`;
-
+    if (r.status==='pendiente') nextBtn = `<button class="kcard-btn primary" onclick="moveCard('${r.id}','en_proceso',event)">▶ Iniciar</button>`;
+    if (r.status==='en_proceso') nextBtn = `<button class="kcard-btn done" onclick="moveCard('${r.id}','completado',event)">✓ Completar</button>`;
     return `
       <div class="kcard ${level}" id="card-${r.id}" draggable="true"
         ondragstart="dragStart(event,'${r.id}')" ondragend="dragEnd(event)">
         <div class="kcard-top">
-          <span class="kcard-folio">${r.folio || '—'}</span>
-          <span class="andon-badge ${level}">${level === 'verde' ? '✅ OK' : level === 'amarillo' ? '⚠️ Alerta' : '🚨 Urgente'}</span>
+          <span class="kcard-folio">${r.folio||'—'}</span>
+          <span class="andon-badge ${level}">${level==='verde'?'✅ OK':level==='amarillo'?'⚠️ Alerta':'🚨 Urgente'}</span>
         </div>
         <div class="kcard-name" title="${r.razon_social}">${r.razon_social}</div>
-        <div class="kcard-rfc">${r.rfc} · ${r.uso_cfdi || ''}</div>
+        <div class="kcard-rfc">${r.rfc} · ${r.uso_cfdi||''}</div>
         <div class="kcard-meta">
           <span class="kcard-total">${total}</span>
-          <span class="kcard-time ${tClass}" title="${new Date(r.created_at).toLocaleString('es-MX')}">${elapsed}</span>
+          <span class="kcard-time ${tClass}">${elapsed}</span>
         </div>
         <div class="kcard-actions">
           <button class="kcard-btn" onclick="openModal('${r.id}',event)">👁 Detalle</button>
@@ -486,84 +550,71 @@
       </div>`;
   }
 
-  // ── ANDON PANEL ──
   function updateAndon(data) {
-    const active = data.filter(r => r.status !== 'completado');
+    const active = data.filter(r => r.status!=='completado');
     const today = new Date(); today.setHours(0,0,0,0);
-    const hoyCompl = data.filter(r => r.status === 'completado' && new Date(r.updated_at || r.created_at) >= today).length;
-
+    const hoyCompl = data.filter(r => r.status==='completado' && new Date(r.updated_at||r.created_at) >= today).length;
     let v=0, a=0, ro=0;
     active.forEach(r => {
       const lv = getAndonLevel(r.created_at, r.status);
-      if (lv === 'verde') v++;
-      else if (lv === 'amarillo') a++;
-      else ro++;
+      if (lv==='verde') v++; else if (lv==='amarillo') a++; else ro++;
     });
-
     document.getElementById('andonVerde').textContent = v;
     document.getElementById('andonAmarillo').textContent = a;
     document.getElementById('andonRojo').textContent = ro;
     document.getElementById('totalStat').textContent = active.length;
     document.getElementById('hoyComplStat').textContent = hoyCompl;
-
-    const alert = document.getElementById('andonAlert');
-    alert.classList.toggle('show', ro > 0);
+    document.getElementById('andonAlert').classList.toggle('show', ro > 0);
   }
 
   // ── DRAG & DROP ──
   function dragStart(e, id) { dragId = id; setTimeout(() => document.getElementById('card-'+id)?.classList.add('dragging'), 0); }
   function dragEnd(e) { if (dragId) document.getElementById('card-'+dragId)?.classList.remove('dragging'); }
   function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
-  function drop(e, newStatus) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
-    if (dragId) moveCard(dragId, newStatus);
-    dragId = null;
-  }
+  function drop(e, newStatus) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); if (dragId) moveCard(dragId, newStatus); dragId = null; }
   document.addEventListener('dragover', e => {
     document.querySelectorAll('.col-body').forEach(b => { if (b !== e.target && !b.contains(e.target)) b.classList.remove('drag-over'); });
   });
 
-  // ── MOVE CARD ──
+  // ── MOVE ──
   async function moveCard(id, newStatus, e) {
     if (e) e.stopPropagation();
     const card = document.getElementById('card-'+id);
-    if (card) { card.style.opacity = '0.4'; card.style.pointerEvents = 'none'; }
+    if (card) { card.style.opacity='0.4'; card.style.pointerEvents='none'; }
     try {
-      const { error } = await sb.from('solicitudes_facturacion').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', id);
+      const { error } = await sb.from('solicitudes_facturacion')
+        .update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', id);
       if (error) throw error;
       await loadData();
     } catch(err) {
-      alert('Error al actualizar: ' + err.message);
-      if (card) { card.style.opacity = '1'; card.style.pointerEvents = ''; }
+      alert('Error al actualizar: '+err.message);
+      if (card) { card.style.opacity='1'; card.style.pointerEvents=''; }
     }
   }
 
-  // ── DETAIL MODAL ──
+  // ── MODAL ──
   function openModal(id, e) {
     if (e) e.stopPropagation();
-    const r = allData.find(x => String(x.id) === String(id));
+    const r = allData.find(x => String(x.id)===String(id));
     if (!r) return;
-
     let productos = [];
-    try { productos = JSON.parse(r.productos || '[]'); } catch{}
-
+    try { productos = JSON.parse(r.productos||'[]'); } catch{}
     const level = getAndonLevel(r.created_at, r.status);
-    const levelLabels = { verde: '✅ A tiempo', amarillo: '⚠️ Próximo a vencer', rojo: '🚨 Vencida' };
-    const total = parseFloat(r.total || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+    const levelLabels = { verde:'✅ A tiempo', amarillo:'⚠️ Próximo a vencer', rojo:'🚨 Vencida' };
+    const total = parseFloat(r.total||0).toLocaleString('es-MX', { style:'currency', currency:'MXN' });
 
-    document.getElementById('modalTitle').textContent = `Solicitud ${r.folio || r.id}`;
+    document.getElementById('modalTitle').textContent = `Solicitud ${r.folio||r.id}`;
     document.getElementById('modalBody').innerHTML = `
       <div class="detail-grid">
-        <div class="detail-item"><label>Razón Social</label><p>${r.razon_social}</p></div>
-        <div class="detail-item"><label>RFC</label><p>${r.rfc}</p></div>
-        <div class="detail-item"><label>Solicitante</label><p>${r.solicitante || '—'}</p></div>
-        <div class="detail-item"><label>Régimen Fiscal</label><p>${r.regimen_fiscal || '—'}</p></div>
-        <div class="detail-item"><label>Uso de CFDI</label><p>${r.uso_cfdi || '—'}</p></div>
-        <div class="detail-item"><label>Domicilio Fiscal</label><p>${r.domicilio_fiscal || '—'}</p></div>
-        <div class="detail-item"><label>Código Postal</label><p>${r.codigo_postal || '—'}</p></div>
-        <div class="detail-item"><label>Ciudad</label><p>${r.ciudad || '—'}</p></div>
-        <div class="detail-item"><label>Destino</label><p>${r.tipo_destino === 'email' ? '📧 ' + r.correo_destino : '📱 ' + r.telefono_destino}</p></div>
+        <div class="detail-item"><label>Emisor</label><p>${r.razon_social}</p></div>
+        <div class="detail-item"><label>RFC del Emisor</label><p>${r.rfc}</p></div>
+        <div class="detail-item"><label>Receptor</label><p>${r.solicitante||'—'}</p></div>
+        <div class="detail-item"><label>RFC del Receptor</label><p>${r.rfc_receptor||'—'}</p></div>
+        <div class="detail-item"><label>Régimen Fiscal</label><p>${r.regimen_fiscal||'—'}</p></div>
+        <div class="detail-item"><label>Uso de CFDI</label><p>${r.uso_cfdi||'—'}</p></div>
+        <div class="detail-item"><label>Domicilio Fiscal</label><p>${r.domicilio_fiscal||'—'}</p></div>
+        <div class="detail-item"><label>Código Postal</label><p>${r.codigo_postal||'—'} ${r.ciudad||''}</p></div>
+        <div class="detail-item"><label>Destino</label><p>${r.tipo_destino==='email'?'📧 '+r.correo_destino:'📱 '+r.telefono_destino}</p></div>
         <div class="detail-item"><label>Estado</label><p><span class="status-badge ${r.status}">${r.status.replace('_',' ')}</span></p></div>
         <div class="detail-item"><label>Andon</label><p><span class="andon-badge ${level}">${levelLabels[level]}</span></p></div>
         <div class="detail-item"><label>Recibida</label><p>${new Date(r.created_at).toLocaleString('es-MX')}</p></div>
@@ -575,10 +626,10 @@
         <tbody>
           ${productos.length ? productos.map(p => `
             <tr>
-              <td>${p.desc || p.descripcion || '—'}</td>
-              <td style="text-align:center">${p.qty || p.cantidad || 0}</td>
-              <td style="text-align:right">$${parseFloat(p.price||p.precio_unitario||0).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
-              <td style="text-align:right">$${((p.qty||p.cantidad||0)*(p.price||p.precio_unitario||0)).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
+              <td>${p.desc||'—'}</td>
+              <td style="text-align:center">${p.qty||0}</td>
+              <td style="text-align:right">$${parseFloat(p.price||0).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
+              <td style="text-align:right">$${((p.qty||0)*(p.price||0)).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
             </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--gray)">Sin conceptos</td></tr>'}
         </tbody>
       </table>
@@ -592,17 +643,18 @@
         </div>` : ''}
     `;
     let footerBtns = `<button class="btn-modal secondary" onclick="closeModal()">Cerrar</button>`;
-    if (r.status === 'pendiente') footerBtns += `<button class="btn-modal warning" onclick="moveCard('${r.id}','en_proceso');closeModal()">▶ Iniciar proceso</button>`;
-    if (r.status === 'en_proceso') footerBtns += `<button class="btn-modal success" onclick="moveCard('${r.id}','completado');closeModal()">✓ Marcar completada</button>`;
+    if (r.status==='pendiente') footerBtns += `<button class="btn-modal warning" onclick="moveCard('${r.id}','en_proceso');closeModal()">▶ Iniciar proceso</button>`;
+    if (r.status==='en_proceso') footerBtns += `<button class="btn-modal success" onclick="moveCard('${r.id}','completado');closeModal()">✓ Marcar completada</button>`;
     document.getElementById('modalFooter').innerHTML = footerBtns;
     document.getElementById('modalOverlay').classList.add('show');
   }
   function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
 
-  // ── INIT ──
-  loadData();
-  // Auto-refresh every 60 seconds
-  setInterval(loadData, 60000);
+  // Auto-refresh 60s
+  setInterval(() => { if (isAuthenticated) loadData(); }, 60000);
+
+  // Agregar rfc_receptor a la tabla Supabase con esta query si no existe:
+  // ALTER TABLE public.solicitudes_facturacion ADD COLUMN IF NOT EXISTS rfc_receptor TEXT;
 </script>
 </body>
 </html>

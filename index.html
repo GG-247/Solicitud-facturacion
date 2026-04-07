@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solicitud de Facturación | Lorenzo Reyes y Asociados, S.C.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <style>
@@ -30,12 +30,21 @@
       background: var(--white);
       padding: 0 2.5rem;
       display: flex; align-items: center; justify-content: space-between;
-      height: 72px;
+      height: 68px;
       position: sticky; top: 0; z-index: 100;
       box-shadow: 0 2px 16px rgba(27,125,185,0.12);
       border-bottom: 3px solid var(--blue);
     }
-    .logo-img { height: 42px; width: auto; display: block; }
+    .logo-name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--blue-darker);
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      line-height: 1.2;
+    }
+    .logo-name span { color: var(--blue); }
     .header-nav a {
       color: var(--gray); text-decoration: none; font-size: 0.82rem;
       font-weight: 500; letter-spacing: 0.05em; transition: color 0.2s;
@@ -44,7 +53,7 @@
 
     .hero {
       background: linear-gradient(135deg, var(--blue-darker) 0%, var(--blue-dark) 50%, var(--blue) 100%);
-      padding: 4.5rem 2.5rem 3.5rem;
+      padding: 4rem 2.5rem 3.25rem;
       text-align: center; position: relative; overflow: hidden;
     }
     .hero::before {
@@ -52,14 +61,12 @@
       position: absolute; inset: 0;
       background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40z'/%3E%3C/g%3E%3C/svg%3E");
     }
-    .hero-logo { height: 52px; margin: 0 auto 1.5rem; filter: brightness(0) invert(1); display: block; }
-    .hero-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 0.85rem; }
-    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 4vw, 2.7rem); color: var(--white); font-weight: 700; line-height: 1.2; margin-bottom: 0.9rem; }
-    .hero p { color: rgba(255,255,255,0.75); font-size: 1rem; max-width: 500px; margin: 0 auto; line-height: 1.7; font-weight: 300; }
-    .blue-line { width: 44px; height: 3px; background: rgba(255,255,255,0.6); margin: 1.2rem auto; border-radius: 2px; }
+    .hero-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 0.85rem; }
+    .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem, 4vw, 2.5rem); color: var(--white); font-weight: 800; line-height: 1.2; margin-bottom: 0.9rem; }
+    .hero p { color: rgba(255,255,255,0.72); font-size: 0.97rem; max-width: 480px; margin: 0 auto; line-height: 1.7; font-weight: 300; }
+    .blue-line { width: 44px; height: 3px; background: rgba(255,255,255,0.5); margin: 1.1rem auto; border-radius: 2px; }
 
-    main { max-width: 840px; margin: -1.5rem auto 4rem; padding: 0 1.5rem; position: relative; z-index: 10; }
-
+    main { max-width: 860px; margin: -1.5rem auto 4rem; padding: 0 1.5rem; position: relative; z-index: 10; }
     .form-card { background: var(--white); border-radius: 16px; box-shadow: 0 8px 60px rgba(27,125,185,0.1); overflow: hidden; }
 
     .progress-bar { display: flex; background: var(--blue-darker); padding: 1.4rem 2rem; }
@@ -77,8 +84,29 @@
     .form-section.active { display: block; animation: fadeIn 0.25s ease; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-    .section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: #1a2e3e; margin-bottom: 0.35rem; }
+    .section-title { font-family: 'Montserrat', sans-serif; font-size: 1.25rem; color: #1a2e3e; margin-bottom: 0.35rem; font-weight: 700; }
     .section-desc { color: var(--gray); font-size: 0.88rem; margin-bottom: 1.75rem; line-height: 1.6; }
+
+    /* Sub-section divider */
+    .subsection {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 1.25rem 1.4rem; margin-bottom: 1.25rem;
+    }
+    .subsection-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--blue-darker);
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1.5px solid var(--blue-pale);
+    }
+    .subsection-title .badge {
+      background: var(--blue); color: white;
+      border-radius: 4px; padding: 0.15rem 0.5rem;
+      font-size: 0.68rem;
+    }
 
     .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; }
     .field-full { grid-column: 1 / -1; }
@@ -99,11 +127,9 @@
     .field-error.show { display: block; }
     textarea { resize: vertical; min-height: 80px; }
 
-    /* cfdi dynamic note */
     .cfdi-note { font-size: 0.76rem; color: var(--blue-dark); background: var(--blue-pale); border-radius: 6px; padding: 0.5rem 0.75rem; margin-top: 0.35rem; display: none; }
     .cfdi-note.show { display: block; }
 
-    /* Products */
     .productos-header { display: grid; grid-template-columns: 2fr 0.9fr 1.1fr auto; gap: 0.6rem; padding: 0.55rem 0.85rem; background: var(--blue-darker); border-radius: 8px 8px 0 0; }
     .productos-header span { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
     .producto-row { display: grid; grid-template-columns: 2fr 0.9fr 1.1fr auto; gap: 0.6rem; align-items: center; padding: 0.55rem 0.85rem; border: 1px solid var(--border); border-top: none; background: var(--white); }
@@ -116,9 +142,8 @@
     .btn-add-row:hover { background: var(--blue-pale); }
     .total-row { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0.7rem 1rem; background: var(--blue-darker); border-radius: 8px; }
     .total-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-    .total-amount { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: #7fd3f8; font-weight: 600; }
+    .total-amount { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; color: #7fd3f8; font-weight: 700; }
 
-    /* Upload */
     .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 2.25rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--cream); }
     .upload-zone:hover, .upload-zone.drag-over { border-color: var(--blue); background: var(--blue-pale); }
     .upload-icon { font-size: 2.2rem; margin-bottom: 0.65rem; }
@@ -132,12 +157,10 @@
     .file-item-remove { background: none; border: none; cursor: pointer; color: var(--gray); font-size: 0.9rem; transition: color 0.2s; }
     .file-item-remove:hover { color: var(--danger); }
 
-    /* Dest toggle */
     .dest-toggle { display: flex; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.15rem; }
     .dest-toggle button { flex: 1; padding: 0.7rem; border: none; background: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; color: var(--gray); cursor: pointer; transition: all 0.2s; }
     .dest-toggle button.active { background: var(--blue); color: var(--white); }
 
-    /* Nav */
     .form-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2.5rem 1.75rem; border-top: 1px solid var(--gray-light); }
     .btn { padding: 0.75rem 1.75rem; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
     .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--gray); }
@@ -148,13 +171,12 @@
     .btn-success { background: var(--success); color: white; }
     .btn-success:hover { background: #236642; }
 
-    /* Success */
     .success-screen { padding: 3.5rem 2.5rem; text-align: center; display: none; }
     .success-screen.show { display: block; }
     .success-icon { width: 76px; height: 76px; background: rgba(42,125,79,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.4rem; animation: popIn 0.4s ease; }
     @keyframes popIn { 0% { transform:scale(0.5);opacity:0; } 80% { transform:scale(1.1); } 100% { transform:scale(1);opacity:1; } }
-    .success-screen h2 { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: #1a2e3e; margin-bottom: 0.65rem; }
-    .ticket-badge { display: inline-block; padding: 0.5rem 1.25rem; background: var(--blue-darker); color: #7fd3f8; font-family: 'Playfair Display', serif; font-size: 1.1rem; border-radius: 6px; margin: 0.9rem 0; letter-spacing: 0.08em; }
+    .success-screen h2 { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; color: #1a2e3e; margin-bottom: 0.65rem; font-weight: 700; }
+    .ticket-badge { display: inline-block; padding: 0.5rem 1.25rem; background: var(--blue-darker); color: #7fd3f8; font-family: 'Montserrat', sans-serif; font-size: 1.1rem; border-radius: 6px; margin: 0.9rem 0; letter-spacing: 0.08em; font-weight: 700; }
 
     .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -169,24 +191,22 @@
       .progress-bar { padding: 1.1rem 0.75rem; }
       .step-label { display: none; }
       .productos-header, .producto-row { grid-template-columns: 2fr 0.7fr 1fr auto; }
+      .logo-name { font-size: 0.88rem; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <a href="index.html">
-    <img class="logo-img" src="logo.png" alt="Lorenzo Reyes y Asociados, S.C." />
-  </a>
+  <a class="logo-name" href="index.html">Lorenzo Reyes<span> y Asociados, S.C.</span></a>
   <nav class="header-nav">
     <a href="dashboard.html">Panel de Control →</a>
   </nav>
 </header>
 
 <div class="hero">
-  <img class="hero-logo" src="logo.png" alt="Lorenzo Reyes y Asociados, S.C." />
   <p class="hero-eyebrow">Portal de Facturación</p>
-  <h1>Solicita tu factura<br/>de forma rápida y segura</h1>
+  <h1>Solicita tu factura</h1>
   <div class="blue-line"></div>
   <p>Completa el formulario a continuación. Tu solicitud será atendida en un máximo de 24 horas.</p>
 </div>
@@ -205,69 +225,86 @@
     <div class="form-section active" id="section1">
       <div class="section-title">Datos Fiscales</div>
       <p class="section-desc">Ingresa los datos del contribuyente para la emisión correcta del CFDI.</p>
-      <div class="field-grid">
-        <div class="field field-full">
-          <label>Nombre / Razón Social <span class="req">*</span></label>
-          <input type="text" id="razon_social" placeholder="Ej. Empresa Ejemplo S.A. de C.V." />
-          <span class="field-error" id="err_razon">Campo requerido</span>
+
+      <!-- EMISOR -->
+      <div class="subsection">
+        <div class="subsection-title"><span class="badge">1</span> Emisor</div>
+        <div class="field-grid">
+          <div class="field field-full">
+            <label>Emisor <span class="req">*</span></label>
+            <input type="text" id="razon_social" placeholder="Nombre o razón social del emisor" />
+            <span class="field-error" id="err_razon">Campo requerido</span>
+          </div>
+          <div class="field field-full">
+            <label>RFC del Emisor <span class="req">*</span></label>
+            <input type="text" id="rfc" placeholder="XAXX010101000" maxlength="13" style="text-transform:uppercase" />
+            <span class="field-error" id="err_rfc">RFC inválido (formato: XAXX010101000)</span>
+          </div>
         </div>
-        <div class="field">
-          <label>RFC <span class="req">*</span></label>
-          <input type="text" id="rfc" placeholder="XAXX010101000" maxlength="13" style="text-transform:uppercase" />
-          <span class="field-error" id="err_rfc">RFC inválido (formato: XAXX010101000)</span>
-        </div>
-        <div class="field">
-          <label>Nombre del Solicitante <span class="req">*</span></label>
-          <input type="text" id="solicitante" placeholder="Nombre completo de quien solicita" />
-          <span class="field-error" id="err_solicitante">Campo requerido</span>
-        </div>
-        <div class="field">
-          <label>Régimen Fiscal <span class="req">*</span></label>
-          <select id="regimen_fiscal" onchange="updateCFDI()">
-            <option value="">Selecciona régimen…</option>
-            <option value="601">601 – General de Ley Personas Morales</option>
-            <option value="603">603 – Personas Morales con Fines no Lucrativos</option>
-            <option value="605">605 – Sueldos y Salarios e Ingresos Asimilados</option>
-            <option value="606">606 – Arrendamiento</option>
-            <option value="607">607 – Régimen de Enajenación o Adquisición de Bienes</option>
-            <option value="608">608 – Demás Ingresos</option>
-            <option value="610">610 – Residentes en el Extranjero sin Establecimiento Permanente</option>
-            <option value="611">611 – Ingresos por Dividendos (socios y accionistas)</option>
-            <option value="612">612 – Personas Físicas con Actividades Empresariales y Profesionales</option>
-            <option value="614">614 – Ingresos por Intereses</option>
-            <option value="615">615 – Régimen de los Ingresos por Obtención de Premios</option>
-            <option value="616">616 – Sin Obligaciones Fiscales</option>
-            <option value="620">620 – Sociedades Cooperativas de Producción</option>
-            <option value="621">621 – Incorporación Fiscal</option>
-            <option value="622">622 – Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
-            <option value="623">623 – Opcional para Grupos de Sociedades</option>
-            <option value="624">624 – Coordinados</option>
-            <option value="625">625 – Actividades Empresariales con Plataformas Tecnológicas</option>
-            <option value="626">626 – Régimen Simplificado de Confianza (RESICO)</option>
-          </select>
-          <span class="field-error" id="err_regimen">Campo requerido</span>
-        </div>
-        <div class="field">
-          <label>Uso de CFDI <span class="req">*</span></label>
-          <select id="uso_cfdi">
-            <option value="">— Primero selecciona régimen fiscal —</option>
-          </select>
-          <span class="field-error" id="err_uso">Campo requerido</span>
-          <span class="cfdi-note" id="cfdi_note"></span>
-        </div>
-        <div class="field field-full">
-          <label>Domicilio Fiscal <span class="req">*</span></label>
-          <input type="text" id="domicilio" placeholder="Calle, número, colonia, municipio" />
-          <span class="field-error" id="err_domicilio">Campo requerido</span>
-        </div>
-        <div class="field">
-          <label>Código Postal <span class="req">*</span></label>
-          <input type="text" id="cp" placeholder="00000" maxlength="5" />
-          <span class="field-error" id="err_cp">Debe ser 5 dígitos</span>
-        </div>
-        <div class="field">
-          <label>Ciudad / Municipio</label>
-          <input type="text" id="ciudad" placeholder="Ciudad de México" />
+      </div>
+
+      <!-- RECEPTOR -->
+      <div class="subsection">
+        <div class="subsection-title"><span class="badge">2</span> Receptor</div>
+        <div class="field-grid">
+          <div class="field field-full">
+            <label>Receptor <span class="req">*</span></label>
+            <input type="text" id="solicitante" placeholder="Nombre o razón social del receptor" />
+            <span class="field-error" id="err_solicitante">Campo requerido</span>
+          </div>
+          <div class="field field-full">
+            <label>RFC del Receptor <span class="req">*</span></label>
+            <input type="text" id="rfc_receptor" placeholder="XAXX010101000" maxlength="13" style="text-transform:uppercase" />
+            <span class="field-error" id="err_rfc_receptor">RFC inválido (formato: XAXX010101000)</span>
+          </div>
+          <div class="field">
+            <label>Régimen Fiscal <span class="req">*</span></label>
+            <select id="regimen_fiscal" onchange="updateCFDI()">
+              <option value="">Selecciona régimen…</option>
+              <option value="601">601 – General de Ley Personas Morales</option>
+              <option value="603">603 – Personas Morales con Fines no Lucrativos</option>
+              <option value="605">605 – Sueldos y Salarios e Ingresos Asimilados</option>
+              <option value="606">606 – Arrendamiento</option>
+              <option value="607">607 – Régimen de Enajenación o Adquisición de Bienes</option>
+              <option value="608">608 – Demás Ingresos</option>
+              <option value="610">610 – Residentes en el Extranjero sin Establecimiento Permanente</option>
+              <option value="611">611 – Ingresos por Dividendos (socios y accionistas)</option>
+              <option value="612">612 – Personas Físicas con Actividades Empresariales y Profesionales</option>
+              <option value="614">614 – Ingresos por Intereses</option>
+              <option value="615">615 – Régimen de los Ingresos por Obtención de Premios</option>
+              <option value="616">616 – Sin Obligaciones Fiscales</option>
+              <option value="620">620 – Sociedades Cooperativas de Producción</option>
+              <option value="621">621 – Incorporación Fiscal</option>
+              <option value="622">622 – Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
+              <option value="623">623 – Opcional para Grupos de Sociedades</option>
+              <option value="624">624 – Coordinados</option>
+              <option value="625">625 – Actividades Empresariales con Plataformas Tecnológicas</option>
+              <option value="626">626 – Régimen Simplificado de Confianza (RESICO)</option>
+            </select>
+            <span class="field-error" id="err_regimen">Campo requerido</span>
+          </div>
+          <div class="field">
+            <label>Uso de CFDI <span class="req">*</span></label>
+            <select id="uso_cfdi">
+              <option value="">— Primero selecciona régimen fiscal —</option>
+            </select>
+            <span class="field-error" id="err_uso">Campo requerido</span>
+            <span class="cfdi-note" id="cfdi_note"></span>
+          </div>
+          <div class="field field-full">
+            <label>Domicilio Fiscal <span class="req">*</span></label>
+            <input type="text" id="domicilio" placeholder="Calle, número, colonia, municipio" />
+            <span class="field-error" id="err_domicilio">Campo requerido</span>
+          </div>
+          <div class="field">
+            <label>Código Postal <span class="req">*</span></label>
+            <input type="text" id="cp" placeholder="00000" maxlength="5" />
+            <span class="field-error" id="err_cp">Debe ser 5 dígitos</span>
+          </div>
+          <div class="field">
+            <label>Ciudad / Municipio</label>
+            <input type="text" id="ciudad" placeholder="Ciudad de México" />
+          </div>
         </div>
       </div>
     </div>
@@ -346,7 +383,6 @@
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ── CFDI MAP ──
   const cfdiMap = {
     "601": [["G01","Adquisición de mercancías"],["G02","Devoluciones, descuentos o bonificaciones"],["G03","Gastos en general"],["I01","Construcciones"],["I02","Mobiliario y equipo de oficina por inversiones"],["I03","Equipo de transporte"],["I04","Equipo de cómputo y accesorios"],["I05","Dados, troqueles, moldes, matrices y herramental"],["I06","Comunicaciones telefónicas"],["I07","Comunicaciones satelitales"],["I08","Otra maquinaria y equipo"],["S01","Sin efectos fiscales"],["CP01","Pagos"]],
     "603": [["G01","Adquisición de mercancías"],["G02","Devoluciones, descuentos o bonificaciones"],["G03","Gastos en general"],["I01","Construcciones"],["I02","Mobiliario y equipo de oficina por inversiones"],["I03","Equipo de transporte"],["I04","Equipo de cómputo y accesorios"],["I05","Dados, troqueles, moldes, matrices y herramental"],["I06","Comunicaciones telefónicas"],["I07","Comunicaciones satelitales"],["I08","Otra maquinaria y equipo"],["S01","Sin efectos fiscales"],["CP01","Pagos"]],
@@ -464,8 +500,9 @@
     if (s===1) {
       const v = id => document.getElementById(id).value.trim();
       if (!v('razon_social')) { showErr('razon_social','err_razon'); ok=false; }
-      if (!v('solicitante')) { showErr('solicitante','err_solicitante'); ok=false; }
       if (!/^[A-ZÑ&]{3,4}\d{6}[A-Z\d]{3}$/.test(v('rfc').toUpperCase())) { showErr('rfc','err_rfc'); ok=false; }
+      if (!v('solicitante')) { showErr('solicitante','err_solicitante'); ok=false; }
+      if (!/^[A-ZÑ&]{3,4}\d{6}[A-Z\d]{3}$/.test(v('rfc_receptor').toUpperCase())) { showErr('rfc_receptor','err_rfc_receptor'); ok=false; }
       if (!v('regimen_fiscal')) { showErr('regimen_fiscal','err_regimen'); ok=false; }
       if (!v('uso_cfdi')) { showErr('uso_cfdi','err_uso'); ok=false; }
       if (!v('domicilio')) { showErr('domicilio','err_domicilio'); ok=false; }
@@ -520,6 +557,7 @@
         razon_social: document.getElementById('razon_social').value.trim(),
         rfc: document.getElementById('rfc').value.toUpperCase().trim(),
         solicitante: document.getElementById('solicitante').value.trim(),
+        rfc_receptor: document.getElementById('rfc_receptor').value.toUpperCase().trim(),
         regimen_fiscal: document.getElementById('regimen_fiscal').value,
         uso_cfdi: document.getElementById('uso_cfdi').value,
         domicilio_fiscal: document.getElementById('domicilio').value.trim(),

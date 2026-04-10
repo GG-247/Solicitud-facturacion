@@ -678,7 +678,10 @@
     try {
       const { error } = await sb.from('solicitudes_facturacion').delete().eq('id', id);
       if (error) throw error;
-      await loadData();
+      // Eliminar de allData inmediatamente y redibujar sin esperar red
+      allData = allData.filter(r => String(r.id) !== String(id));
+      renderBoard(allData);
+      updateAndon(allData);
     } catch(err) {
       alert('Error al eliminar: '+err.message);
       if (card) { card.style.opacity='1'; card.style.pointerEvents=''; }

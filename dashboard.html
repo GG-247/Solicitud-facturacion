@@ -395,6 +395,7 @@
   let isAuthenticated = false;
   let allData = [];
   let dragId = null;
+  const deletedIds = new Set(); // IDs eliminados localmente
 
   // ── LOCK / LOGIN ──
   function switchTab(tab) {
@@ -489,7 +490,8 @@
     try {
       const { data, error } = await sb.from('solicitudes_facturacion').select('*').order('created_at', { ascending: true }); // FIFO: más antiguas arriba
       if (error) throw error;
-      allData = data || [];
+      // Filtrar IDs que ya fueron eliminados localmente
+      allData = (data || []).filter(r => !deletedIds.has(String(r.id)));
       renderBoard(allData);
       updateAndon(allData);
       document.getElementById('lastUpdate').textContent =
@@ -678,7 +680,8 @@
     try {
       const { error } = await sb.from('solicitudes_facturacion').delete().eq('id', id);
       if (error) throw error;
-      // Eliminar de allData inmediatamente y redibujar sin esperar red
+      // Registrar como eliminado para que loadData no lo restaure
+      deletedIds.add(String(id));
       allData = allData.filter(r => String(r.id) !== String(id));
       renderBoard(allData);
       updateAndon(allData);

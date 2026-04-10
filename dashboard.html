@@ -190,6 +190,8 @@
     .kcard-btn.primary { background: var(--blue); color: white; border-color: var(--blue); }
     .kcard-btn.primary:hover { background: var(--blue-dark); }
     .kcard-btn.done { background: var(--verde); color: white; border-color: var(--verde); }
+    .kcard-btn.danger { background: transparent; border-color: var(--rojo-bg); color: var(--rojo); max-width: 32px; font-size: 0.85rem; }
+    .kcard-btn.danger:hover { background: var(--rojo); color: white; border-color: var(--rojo); }
 
     .col-empty { text-align: center; padding: 2rem 1rem; color: var(--gray); font-size: 0.83rem; }
     .col-empty-icon { font-size: 1.8rem; margin-bottom: 0.5rem; opacity: 0.5; }
@@ -224,6 +226,8 @@
     .btn-modal.warning { background: var(--amarillo); color: var(--white); }
     .btn-modal.warning:hover { background: #b45309; }
     .btn-modal.success { background: var(--verde); color: var(--white); }
+    .btn-modal.danger-modal { background: transparent; border: 1.5px solid var(--rojo); color: var(--rojo); }
+    .btn-modal.danger-modal:hover { background: var(--rojo); color: white; }
     .btn-modal.success:hover { background: #15803d; }
 
     .loading-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; gap: 1rem; color: var(--gray); }
@@ -483,7 +487,7 @@
     if (!isAuthenticated) return;
     document.getElementById('lastUpdate').textContent = '';
     try {
-      const { data, error } = await sb.from('solicitudes_facturacion').select('*').order('created_at', { ascending: false });
+      const { data, error } = await sb.from('solicitudes_facturacion').select('*').order('created_at', { ascending: true }); // FIFO: más antiguas arriba
       if (error) throw error;
       allData = data || [];
       renderBoard(allData);
@@ -510,7 +514,15 @@
 
   function renderBoard(data) {
     const cols = { pendiente: [], en_proceso: [], completado: [] };
-    data.forEach(r => { if (cols[r.status]) cols[r.status].push(r); });
+    data.forEach(r => {
+      if (!cols[r.status]) return;
+      // Ocultar completadas de más de 24 hrs
+      if (r.status === 'completado') {
+        const horasDesdeCompletado = (Date.now() - new Date(r.updated_at || r.created_at)) / 3600000;
+        if (horasDesdeCompletado > 24) return;
+      }
+      cols[r.status].push(r);
+    });
     Object.entries(cols).forEach(([status, rows]) => {
       const body = document.getElementById('body-'+status);
       document.getElementById('cnt-'+status).textContent = rows.length;
@@ -546,6 +558,7 @@
         <div class="kcard-actions">
           <button class="kcard-btn" onclick="openModal('${r.id}',event)">👁 Detalle</button>
           ${nextBtn}
+          <button class="kcard-btn danger" onclick="confirmDelete('${r.id}','${r.folio||r.id}',event)" title="Eliminar solicitud">🗑</button>
         </div>
       </div>`;
   }
@@ -643,6 +656,7 @@
         </div>` : ''}
     `;
     let footerBtns = `<button class="btn-modal secondary" onclick="closeModal()">Cerrar</button>`;
+    footerBtns += `<button class="btn-modal danger-modal" onclick="confirmDelete('${r.id}','${r.folio||r.id}');closeModal()">🗑 Eliminar</button>`;
     if (r.status==='pendiente') footerBtns += `<button class="btn-modal warning" onclick="moveCard('${r.id}','en_proceso');closeModal()">▶ Iniciar proceso</button>`;
     if (r.status==='en_proceso') footerBtns += `<button class="btn-modal success" onclick="moveCard('${r.id}','completado');closeModal()">✓ Marcar completada</button>`;
     document.getElementById('modalFooter').innerHTML = footerBtns;
@@ -650,11 +664,29 @@
   }
   function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
 
+  // ── DELETE ──
+  function confirmDelete(id, folio, e) {
+    if (e) e.stopPropagation();
+    // Confirm dialog
+    const ok = confirm(`¿Eliminar definitivamente la solicitud ${folio}?\n\nEsta acción no se puede deshacer.`);
+    if (ok) deleteCard(id);
+  }
+
+  async function deleteCard(id) {
+    const card = document.getElementById('card-'+id);
+    if (card) { card.style.opacity='0.3'; card.style.pointerEvents='none'; }
+    try {
+      const { error } = await sb.from('solicitudes_facturacion').delete().eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch(err) {
+      alert('Error al eliminar: '+err.message);
+      if (card) { card.style.opacity='1'; card.style.pointerEvents=''; }
+    }
+  }
+
   // Auto-refresh 60s
   setInterval(() => { if (isAuthenticated) loadData(); }, 60000);
-
-  // Agregar rfc_receptor a la tabla Supabase con esta query si no existe:
-  // ALTER TABLE public.solicitudes_facturacion ADD COLUMN IF NOT EXISTS rfc_receptor TEXT;
 </script>
 </body>
 </html>
